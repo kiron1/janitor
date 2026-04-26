@@ -12,6 +12,14 @@ on:
     branches:
       - main
   workflow_dispatch:
+    inputs:
+      log_level:
+        description: 'Log level'
+        default: 'info'
+        type: choice
+        options:
+          - info
+          - debug
   schedule:
     - cron: "37 9,11 * * 2,4,5"
 
@@ -30,7 +38,7 @@ jobs:
           configurationFile: renovate.json
           token: ${{ secrets.RENOVATE_TOKEN }}
         env:
-          LOG_LEVEL: ${{ github.event_name == 'workflow_dispatch' && 'debug' || 'info' }}
+          LOG_LEVEL: ${{ inputs.log_level || 'info' }}
           RENOVATE_ALLOWED_UNSAFE_EXECUTIONS: '["bazelModDeps"]'
           RENOVATE_DRY_RUN: ${{ github.event_name == 'pull_request' && 'full' || '' }}
           RENOVATE_REPOSITORIES: '["kiron1/bazel-compile-commands", "kiron1/janitor", "kiron1/proxydetox"]'
