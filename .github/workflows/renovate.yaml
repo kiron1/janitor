@@ -1,0 +1,36 @@
+---
+name: Renovate
+
+on:
+  pull_request:
+    paths:
+      - "renovate.json"
+      - ".github/workflows/renovate.yaml"
+  # trigger renovate post push to maain
+  # to give renovate a chance to update their PRs
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+  schedule:
+    - cron: "37 9,11 * * 2,4,5"
+
+concurrency:
+  group: renovate
+
+jobs:
+  renovate:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Self-hosted Renovate
+        uses: renovatebot/github-action@v46.1.10
+        with:
+          configurationFile: renovate.json
+          token: ${{ secrets.RENOVATE_TOKEN }}
+        env:
+          LOG_LEVEL: ${{ github.event_name == 'workflow_dispatch' && 'debug' || 'info' }}
+          RENOVATE_ALLOWED_UNSAFE_EXECUTIONS: '["bazelModDeps"]'
+          # github.head_ref is only available in pull requests, in all other events use config from main branch
+          RENOVATE_BASE_BRANCH_PATTERNS: ${{ format('["{0}"]', github.head_ref || 'main') }}
+          RENOVATE_DRY_RUN: ${{ github.event_name == 'pull_request' && 'full' || '' }}
+          RENOVATE_REPOSITORIES: ${{ toJSON(['bazel-compile-commands', 'kiron1/janitor', 'kiron1/proxydetox']) }}
