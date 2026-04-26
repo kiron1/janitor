@@ -22,6 +22,8 @@ jobs:
   renovate:
     runs-on: ubuntu-24.04
     steps:
+      - name: Checkout
+        uses: actions/checkout@v6
       - name: Self-hosted Renovate
         uses: renovatebot/github-action@v46.1.10
         with:
@@ -30,7 +32,5 @@ jobs:
         env:
           LOG_LEVEL: ${{ github.event_name == 'workflow_dispatch' && 'debug' || 'info' }}
           RENOVATE_ALLOWED_UNSAFE_EXECUTIONS: '["bazelModDeps"]'
-          # github.head_ref is only available in pull requests, in all other events use config from main branch
-          RENOVATE_BASE_BRANCH_PATTERNS: ${{ format('["{0}"]', github.head_ref || 'main') }}
           RENOVATE_DRY_RUN: ${{ github.event_name == 'pull_request' && 'full' || '' }}
-          RENOVATE_REPOSITORIES: '["bazel-compile-commands", "kiron1/janitor", "kiron1/proxydetox"]'
+          RENOVATE_REPOSITORIES: '["kiron1/bazel-compile-commands", "kiron1/janitor", "kiron1/proxydetox"]'
