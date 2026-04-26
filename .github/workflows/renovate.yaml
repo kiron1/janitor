@@ -33,4 +33,4 @@ jobs:
           # github.head_ref is only available in pull requests, in all other events use config from main branch
           RENOVATE_BASE_BRANCH_PATTERNS: ${{ format('["{0}"]', github.head_ref || 'main') }}
           RENOVATE_DRY_RUN: ${{ github.event_name == 'pull_request' && 'full' || '' }}
-          RENOVATE_REPOSITORIES: ${{ toJSON(['bazel-compile-commands', 'kiron1/janitor', 'kiron1/proxydetox']) }}
+          RENOVATE_REPOSITORIES: '["bazel-compile-commands", "kiron1/janitor", "kiron1/proxydetox"]'
